@@ -4,11 +4,48 @@
 
 ## GitHub Actions
 
-[![Node.js CI](https://github.com/ugioni/integration-tests-jest/actions/workflows/node.js.yml/badge.svg?branch=master)](https://github.com/ugioni/integration-tests-jest/actions/workflows/node.js.yml)
+[![Node.js CI](https://github.com/CasagrandeVictor/prova02-unit-test-VictorCasagrande/actions/workflows/node.js.yml/badge.svg?branch=master)](https://github.com/CasagrandeVictor/prova02-unit-test-VictorCasagrande/actions/workflows/node.js.yml)
 
 ## SonarCloud
 
-[![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=ugioni_integration-tests-jest&metric=alert_status)](https://sonarcloud.io/summary/new_code?id=ugioni_integration-tests-jest)
+[![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=CasagrandeVictor_prova02-unit-test-VictorCasagrande&metric=alert_status)](https://sonarcloud.io/summary/new_code?id=CasagrandeVictor_prova02-unit-test-VictorCasagrande)
+
+
+# Prova 02 - CRUD de Animes (restful-api.dev)
+
+Testes de API de um CRUD de **animes** usando a API pública [restful-api.dev](https://restful-api.dev), feitos com **Jest** + **PactumJS**.
+
+Arquivo: [`test/animes_crud.spec.ts`](test/animes_crud.spec.ts)
+
+### Como executar
+
+```bash
+npm install
+npx jest animes_crud.spec.ts --config ./jest.config.js
+```
+
+O relatório HTML é gerado em `./output/report.html`.
+
+### Recursos do PactumJS utilizados
+
+- `request.setBaseUrl` e `setDefaultTimeout`: configuração global das requisições;
+- `stores('animeId', 'id')` + `$S{animeId}`: guarda o id criado no POST e reutiliza nos próximos cenários;
+- `withJson`, `withPathParams` e `withQueryParams`: montagem do body, parâmetros de rota e de query;
+- `expectStatus`, `expectJson`, `expectJsonLike`, `expectJsonMatch` (com `pactum-matchers`), `expectJsonLength` e `expectJsonSchema`: validações da resposta.
+
+### Cenários de teste
+
+| # | Método e rota | Cenário | Resultado esperado |
+|---|---|---|---|
+| 1 | `POST /objects` | Cadastrar o anime *Fullmetal Alchemist: Brotherhood* | **200**, `id` gerado, `createdAt` e os dados enviados |
+| 2 | `GET /objects/{id}` | Buscar o anime cadastrado pelo `id` | **200**, corpo de acordo com o JSON Schema e igual ao cadastrado |
+| 3 | `GET /objects?id=` | Listar animes filtrando pelo `id` | **200** e lista com exatamente 1 anime |
+| 4 | `PUT /objects/{id}` | Substituir todos os dados do anime | **200**, `updatedAt` e os novos dados (51 episódios, 2003) |
+| 5 | `PATCH /objects/{id}` | Alterar apenas o nome do anime | **200**, nome alterado e demais dados mantidos |
+| 6 | `DELETE /objects/{id}` | Excluir o anime | **200** e mensagem de exclusão com o `id` |
+| 7 | `GET /objects/{id}` | Buscar o anime após a exclusão | **404** e mensagem `Object with id=... was not found.` |
+
+> Os cenários dependem um do outro (usam o `id` criado no cenário 1), então devem ser executados juntos, em ordem.
 
 # Getting Started
 
